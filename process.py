@@ -233,8 +233,11 @@ def ReturnInfoCard(pathImage):
             obj = ExtractCardFront(id_card, name_card, dob_card, sex_card, nationality_card, home_text,
                                    address_text, doe_card, type, status_text, message_text)
             return obj
+        else:
+            obj = MessageInfo(None, "Failed", "Error! Try another image again !")
+            return obj
     else:
-        obj = MessageInfo(None, "Failed", "Error! Try another image again !")
+        obj = MessageInfo(None, "Failed", "Error! Citizen identification not found !")
         return obj
 detector = vietocr_load()
 net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights', './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
