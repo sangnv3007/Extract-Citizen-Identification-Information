@@ -3,7 +3,6 @@ import numpy as np
 from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
-import time
 import os
 import re
 import base64
@@ -81,16 +80,18 @@ def check_enough_labels(labels, classes):
 # Ham load model Yolo
 
 
-def load_model(path_weights_yolo, path_clf_yolo):
+def load_model(path_weights_yolo, path_clf_yolo, path_to_class):
     weights_yolo = path_weights_yolo
     clf_yolo = path_clf_yolo
     net = cv2.dnn.readNet(weights_yolo, clf_yolo)
-    return net
+    with open(path_to_class, 'r') as f:
+        classes = [line.strip() for line in f.readlines()]
+    return net, classes
 
 # Ham getIndices
 
 
-def getIndices(image, path_to_weight, path_to_cfg, path_to_class):
+def getIndices(image, net, classes):
     # image = cv2.imread(path_to_image)
     # net = load_model('model/rec/yolov4-custom_rec.weights','model/rec/yolov4-custom_rec.cfg')
     (Width, Height) = (image.shape[1], image.shape[0])
@@ -100,10 +101,6 @@ def getIndices(image, path_to_weight, path_to_cfg, path_to_class):
     conf_threshold = 0.6
     nms_threshold = 0.4
     scale = 0.00392
-    net = load_model(path_to_weight, path_to_cfg)
-    with open(path_to_class, 'r') as f:
-        classes = [line.strip() for line in f.readlines()]
-    # print(classes)
     # (416,416) img target size, swapRB=True,  # BGR -> RGB, center crop = False
     blob = cv2.dnn.blobFromImage(
         image, scale, (416, 416), (0, 0, 0), True, crop=False)
@@ -144,8 +141,7 @@ def vietocr_load():
 
 def ReturnCrop(pathImage):
     image = cv2.imread(pathImage)
-    indices, boxes, classes, class_ids, image, confidences = getIndices(
-        image, './model/det/yolov4-tiny-custom_det.weights', './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
+    indices, boxes, classes, class_ids, image, confidences = getIndices(image, net_det, classes_det)
     list_boxes = []
     label = []
     for i in indices:
@@ -175,13 +171,10 @@ def ReturnInfoCard(pathImage):
     crop = ReturnCrop(pathImage)
     # Trich xuat thong tin tu imageCrop
     if (crop is not None):
-        indices, boxes, classes, class_ids, image, confidences = getIndices(
-            crop, './model/rec/yolov4-custom_rec.weights', './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
+        indices, boxes, classes, class_ids, image, confidences = getIndices(crop, net_rec, classes_rec )
         dict_home, dict_address, dict_features = {}, {}, {}
         home_text, address_text, features_text = [], [], []
         label_boxes = []
-        detector = vietocr_load()
-        #imgCrop = np.zeros((100, 100, 3), dtype=np.uint8)
         for i in indices:
             i = i[0]
             box = boxes[i]
@@ -214,7 +207,6 @@ def ReturnInfoCard(pathImage):
                 dict_features.update({s: y})
             if (class_ids[i] == 9):
                 issue_date_card = s
-            #if (class_ids[i] == 10): imgCrop = imageCrop
         classesFront = ['id', 'name', 'dob', 'sex',
                         'nationality', 'home', 'address', 'doe', 'image']
         classesBack = ['features', 'issue_date']
@@ -244,9 +236,10 @@ def ReturnInfoCard(pathImage):
     else:
         obj = MessageInfo(None, "Failed", "Error! Try another image again !")
         return obj
+detector = vietocr_load()
+net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights', './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
+net_rec, classes_rec= load_model('./model/rec/yolov4-custom_rec.weights', './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
 # Class object
-
-
 class ExtractCardFront:
     def __init__(self, id, name, dob, sex, nationality, home, address, doe, type, status, message):
         self.id = id
