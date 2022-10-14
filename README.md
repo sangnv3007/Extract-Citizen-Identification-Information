@@ -72,12 +72,18 @@ Now go to <a href="http://127.0.0.1:8000/docs" class="external-link" target="_bl
 
 * The interactive API documentation will be automatically updated, including the new body:
 
-![Swagger UI](https://fastapi.tiangolo.com/img/index/index-03-swagger-02.png)
+![Step 1](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/step1.png)
 
 * Click on the button "Try it out", it allows you to upload file and directly interact with the API:
 
-![Swagger UI interaction](https://fastapi.tiangolo.com/img/index/index-04-swagger-03.png)
+![Step 2](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/step2.png)
 
 * Then click on the "Execute" button, the user interface will communicate with your API, get the results and show them on the screen:
-![Swagger UI interaction](https://fastapi.tiangolo.com/img/index/index-05-swagger-04.png)
-![Swagger UI interaction](https://fastapi.tiangolo.com/img/index/index-05-swagger-04.png)
+
+Image example
+
+![CCCD Test](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/CMND%20(480).jpeg)
+
+Return results
+
+![Step 3](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/step3.png)
