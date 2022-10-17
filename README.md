@@ -22,6 +22,11 @@ FastAPI stands on the shoulders of giants:
 * <a href="https://pydantic-docs.helpmanual.io/" class="external-link" target="_blank">Pydantic</a> for the data parts.
 
 ## Installation
+<div class="termy">
+
+```console
+$ pip install -r requirements.txt
+```
 
 <div class="termy">
 
