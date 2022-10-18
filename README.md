@@ -1,6 +1,6 @@
 # Extract Citizen Identification Information Vietnames
 ### Setup
-Download folder [model](https://drive.google.com/drive/folders/1GWKAuTKz6FAElXqQlUO_kYnBowhWqpAC?usp=sharing), unzip and copy to project run directory:
+Download folder [model](https://drive.google.com/drive/folders/1I19e5kxPKoyIIhJBIFbomE33AmyyhZFh?usp=sharing), unzip and copy to project run directory:
 ```
 model
 └───transformerocr.pth
