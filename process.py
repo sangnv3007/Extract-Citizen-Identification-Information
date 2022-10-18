@@ -26,6 +26,12 @@ def EndecodeImage(base64_img):
         file_to_save.write(decoded_image_data)
 # Ham get output_layer
 
+# Ham check dinh dang dau vao cua anh
+def check_type_image(path):
+    imgName = str(path)
+    imgName = imgName[imgName.rindex('.')+1:]
+    imgName = imgName.lower()
+    return imgName
 
 def get_output_layers(net):
     layer_names = net.getLayerNames()
@@ -160,91 +166,92 @@ def ReturnCrop(pathImage):
                                     label_boxes['bottom_right'], label_boxes['top_right']])
         crop = perspective_transoform(image, source_points)
         return crop
-    # else:
-    #     print("Error ! Citizen Identification not found.")
-    #     #obj = MessageInfo(None,"Failed", "Error ! Citizen Identification not found.")
 # Ham tra ve ket qua thong tin CCCD
 # Upload part
 
 
 def ReturnInfoCard(pathImage):
-    crop = ReturnCrop(pathImage)
-    # Trich xuat thong tin tu imageCrop
-    if (crop is not None):
-        indices, boxes, classes, class_ids, image, confidences = getIndices(crop, net_rec, classes_rec )
-        dict_home, dict_address, dict_features = {}, {}, {}
-        home_text, address_text, features_text = [], [], []
-        label_boxes = []
-        for i in indices:
-            i = i[0]
-            box = boxes[i]
-            x = box[0]
-            y = box[1]
-            w = box[2]
-            h = box[3]
-            label_boxes.append(str(classes[class_ids[i]]))
-            # draw_prediction(crop, classes[class_ids[i]], confidences[i], round(x), round(y), round(x + w), round(y + h))
-            imageCrop = image[round(y): round(y + h), round(x):round(x + w)]
-            img = Image.fromarray(imageCrop)
-            s = detector.predict(img)
-            if (class_ids[i] == 0):
-                id_card = s
-            if (class_ids[i] == 1):
-                name_card = s
-            if (class_ids[i] == 2):
-                dob_card = s
-            if (class_ids[i] == 3):
-                sex_card = s
-            if (class_ids[i] == 4):
-                nationality_card = s
-            if (class_ids[i] == 5):
-                dict_home.update({s: y})
-            if (class_ids[i] == 6):
-                dict_address.update({s: y})
-            if (class_ids[i] == 7):
-                doe_card = s
-            if (class_ids[i] == 8):
-                dict_features.update({s: y})
-            if (class_ids[i] == 9):
-                issue_date_card = s
-        classesFront = ['id', 'name', 'dob', 'sex',
-                        'nationality', 'home', 'address', 'doe', 'image']
-        classesBack = ['features', 'issue_date']
-        if (check_enough_labels(label_boxes, classesBack)):
-            type = "cccd_back"
-            status_text = "Successful"
-            message_text = "Thành công"
-            for i in sorted(dict_features.items(),
-                            key=lambda item: item[1]): features_text.append(i[0])
-            features_text = " ".join(features_text)
-            obj = ExtractCardBack(
-                features_text, issue_date_card, type, status_text, message_text)
-            return obj
-        if (check_enough_labels(label_boxes, classesFront)):
-            type = "cccd_front"
-            status_text = "Successful"
-            message_text = "Thành công"
-            for i in sorted(dict_home.items(),
-                            key=lambda item: item[1]): home_text.append(i[0])
-            for i in sorted(dict_address.items(),
-                            key=lambda item: item[1]): address_text.append(i[0])
-            home_text = " ".join(home_text)
-            address_text = " ".join(address_text)
-            obj = ExtractCardFront(id_card, name_card, dob_card, sex_card, nationality_card, home_text,
-                                   address_text, doe_card, type, status_text, message_text)
-            return obj
-        else:
-            obj = MessageInfo(None, "Failed", "Error! Try another image again !")
-            return obj
-    else:
-        obj = MessageInfo(None, "Failed", "Error! Citizen identification not found !")
+    typeimage = check_type_image(pathImage) 
+    if(typeimage!='png' and typeimage!='jpeg' and typeimage!='jpg' and typeimage != 'bmp'):
+        obj = MessageInfo(None, 1, 'Invalid image file! Please try again.')
         return obj
+    else:
+        crop = ReturnCrop(pathImage)
+        # Trich xuat thong tin tu imageCrop
+        if (crop is not None):
+            indices, boxes, classes, class_ids, image, confidences = getIndices(crop, net_rec, classes_rec )
+            dict_home, dict_address, dict_features = {}, {}, {}
+            home_text, address_text, features_text = [], [], []
+            label_boxes = []
+            for i in indices:
+                i = i[0]
+                box = boxes[i]
+                x = box[0]
+                y = box[1]
+                w = box[2]
+                h = box[3]
+                label_boxes.append(str(classes[class_ids[i]]))
+                # draw_prediction(crop, classes[class_ids[i]], confidences[i], round(x), round(y), round(x + w), round(y + h))
+                imageCrop = image[round(y): round(y + h), round(x):round(x + w)]
+                img = Image.fromarray(imageCrop)
+                s = detector.predict(img)
+                if (class_ids[i] == 0):
+                    id_card = s
+                if (class_ids[i] == 1):
+                    name_card = s
+                if (class_ids[i] == 2):
+                    dob_card = s
+                if (class_ids[i] == 3):
+                    sex_card = s
+                if (class_ids[i] == 4):
+                    nationality_card = s
+                if (class_ids[i] == 5):
+                    dict_home.update({s: y})
+                if (class_ids[i] == 6):
+                    dict_address.update({s: y})
+                if (class_ids[i] == 7):
+                    doe_card = s
+                if (class_ids[i] == 8):
+                    dict_features.update({s: y})
+                if (class_ids[i] == 9):
+                    issue_date_card = s
+            classesFront = ['id', 'name', 'dob', 'sex',
+                            'nationality', 'home', 'address', 'doe', 'image']
+            classesBack = ['features', 'issue_date']
+            if (check_enough_labels(label_boxes, classesBack)):
+                type = "cccd_back"
+                errorCode = 0
+                errorMessage = ""
+                for i in sorted(dict_features.items(),
+                                key=lambda item: item[1]): features_text.append(i[0])
+                features_text = " ".join(features_text)
+                obj = ExtractCardBack(features_text, issue_date_card, type, errorCode, errorMessage)
+                return obj
+            if (check_enough_labels(label_boxes, classesFront)):
+                type = "cccd_front"
+                errorCode = 0
+                errorMessage = ""
+                for i in sorted(dict_home.items(),
+                                key=lambda item: item[1]): home_text.append(i[0])
+                for i in sorted(dict_address.items(),
+                                key=lambda item: item[1]): address_text.append(i[0])
+                home_text = " ".join(home_text)
+                address_text = " ".join(address_text)
+                obj = ExtractCardFront(id_card, name_card, dob_card, sex_card, nationality_card, home_text,
+                                    address_text, doe_card, type, errorCode, errorMessage)
+                return obj
+            else:
+                obj = MessageInfo(None, 3, "The photo quality is low. Please try the image again !")
+                return obj
+        else:
+            obj = MessageInfo(None, 4, "Error! Citizen identification not found !")
+            return obj
 detector = vietocr_load()
 net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights', './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
 net_rec, classes_rec= load_model('./model/rec/yolov4-custom_rec.weights', './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
 # Class object
 class ExtractCardFront:
-    def __init__(self, id, name, dob, sex, nationality, home, address, doe, type, status, message):
+    def __init__(self, id, name, dob, sex, nationality, home, address, doe, type, errorCode, errorMessage):
         self.id = id
         self.name = name
         self.dob = dob
@@ -254,21 +261,21 @@ class ExtractCardFront:
         self.address = address
         self.doe = doe
         self.type = type
-        self.status = status
-        self.message = message
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
 
 
 class ExtractCardBack:
-    def __init__(self, features, issue_date, type, status, message):
+    def __init__(self, features, issue_date, type, errorCode, errorMessage):
         self.features = features
         self.issue_date = issue_date
         self.type = type
-        self.status = status
-        self.message = message
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
 
 
 class MessageInfo:
-    def __init__(self, type, status, message):
+    def __init__(self, type, errorCode, errorMessage):
         self.type = type
-        self.status = status
-        self.message = message
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
