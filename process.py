@@ -35,7 +35,7 @@ def check_type_image(path):
 
 def get_output_layers(net):
     layer_names = net.getLayerNames()
-    output_layers = [layer_names[i[0] - 1]
+    output_layers = [layer_names[i - 1]
                      for i in net.getUnconnectedOutLayers()]
     return output_layers
 
@@ -151,7 +151,7 @@ def ReturnCrop(pathImage):
     list_boxes = []
     label = []
     for i in indices:
-        i = i[0]
+        #i = i[0]
         box = boxes[i]
         # print(box,str(classes[class_ids[i]]))
         x = box[0]
@@ -184,7 +184,7 @@ def ReturnInfoCard(pathImage):
             home_text, address_text, features_text = [], [], []
             label_boxes = []
             for i in indices:
-                i = i[0]
+                #i = i[0]
                 box = boxes[i]
                 x = box[0]
                 y = box[1]
@@ -279,3 +279,5 @@ class MessageInfo:
         self.type = type
         self.errorCode = errorCode
         self.errorMessage = errorMessage
+obj = ReturnInfoCard("CMND (480).jpeg")
+print(obj.name)
