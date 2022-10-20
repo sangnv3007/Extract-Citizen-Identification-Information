@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from tkinter import filedialog as fd
 import cv2
+from process import ReturnInfoCard
 def uploadF():
     global pathFront
     filetypes = (
@@ -79,8 +80,14 @@ def uploadFace():
     bt_uploadFace.place(relx=0.3, width=250, anchor=CENTER)
     bt_continueFace.place(relx=0.7, rely=0.8, anchor=CENTER, width=250)
     pathFace = filenameFace
-
-
+    obj1 = ReturnInfoCard(pathFront)
+    print(json.dumps({"errorCode": obj1.errorCode, "errorMessage": obj1.errorMessage,
+    "data":[{"id": obj1.id, "name": obj1.name, "dob": obj1.dob,"sex": obj1.sex,
+    "nationality": obj1.nationality,"home": obj1.home, "address": obj1.address, "doe": obj1.doe, "type": obj1.type}]}))
+    obj2 = ReturnInfoCard(pathBack)
+    print(json.dumps({"errorCode": obj2.errorCode, "errorMessage": obj2.errorMessage,
+            "data":[{"features": obj2.features, "issue_date": obj2.issue_date,
+            "type": obj2.type}]}))
 def res():
     print("Ket qua xac minh")
     print(pathFront)

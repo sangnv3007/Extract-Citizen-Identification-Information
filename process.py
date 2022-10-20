@@ -35,7 +35,7 @@ def check_type_image(path):
 
 def get_output_layers(net):
     layer_names = net.getLayerNames()
-    output_layers = [layer_names[i - 1]
+    output_layers = [layer_names[i[0] - 1]
                      for i in net.getUnconnectedOutLayers()]
     return output_layers
 
@@ -151,7 +151,7 @@ def ReturnCrop(pathImage):
     list_boxes = []
     label = []
     for i in indices:
-        #i = i[0]
+        i = i[0]
         box = boxes[i]
         # print(box,str(classes[class_ids[i]]))
         x = box[0]
@@ -184,7 +184,7 @@ def ReturnInfoCard(pathImage):
             home_text, address_text, features_text = [], [], []
             label_boxes = []
             for i in indices:
-                #i = i[0]
+                i = i[0]
                 box = boxes[i]
                 x = box[0]
                 y = box[1]
@@ -279,5 +279,16 @@ class MessageInfo:
         self.type = type
         self.errorCode = errorCode
         self.errorMessage = errorMessage
-obj = ReturnInfoCard("CMND (480).jpeg")
-print(obj.name)
+#obj = ReturnInfoCard("cmt.be3f6567.png")
+# print(obj.name)
+# if (obj.type == "cccd_front"):
+#     print(json.dumps({"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
+#     "data":[{"id": obj.id, "name": obj.name, "dob": obj.dob,"sex": obj.sex,
+#     "nationality": obj.nationality,"home": obj.home, "address": obj.address, "doe": obj.doe, "type": obj.type}]}))
+# if (obj.type == "cccd_back"):
+#     print(json.dumps({"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
+#             "data":[{"features": obj.features, "issue_date": obj.issue_date,
+#             "type": obj.type}]}))
+# else:
+#     print(json.dumps({"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
+#             "data": []}))
