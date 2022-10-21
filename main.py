@@ -48,7 +48,7 @@ def upload(file: UploadFile = File(...)):
         if (obj.type == "cccd_front"):
             return {"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
                     "data":[{"id": obj.id, "name": obj.name, "dob": obj.dob,"sex": obj.sex,
-                    "nationality": obj.nationality,"home": obj.home, "address": obj.address, "doe": obj.doe, "type": obj.type}]}
+                    "nationality": obj.nationality,"home": obj.home, "address": obj.address, "doe": obj.doe,"imageFace": obj.imageFace, "type": obj.type}]}
         if (obj.type == "cccd_back"):
             return {"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
                     "data":[{"features": obj.features, "issue_date": obj.issue_date,

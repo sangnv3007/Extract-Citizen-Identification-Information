@@ -7,6 +7,7 @@ import os
 import re
 import base64
 import json
+import time
 # Funtions
 # Ham decode, endecode
 
@@ -27,11 +28,14 @@ def EndecodeImage(base64_img):
 # Ham get output_layer
 
 # Ham check dinh dang dau vao cua anh
+
+
 def check_type_image(path):
     imgName = str(path)
     imgName = imgName[imgName.rindex('.')+1:]
     imgName = imgName.lower()
     return imgName
+
 
 def get_output_layers(net):
     layer_names = net.getLayerNames()
@@ -147,7 +151,8 @@ def vietocr_load():
 
 def ReturnCrop(pathImage):
     image = cv2.imread(pathImage)
-    indices, boxes, classes, class_ids, image, confidences = getIndices(image, net_det, classes_det)
+    indices, boxes, classes, class_ids, image, confidences = getIndices(
+        image, net_det, classes_det)
     list_boxes = []
     label = []
     for i in indices:
@@ -171,18 +176,20 @@ def ReturnCrop(pathImage):
 
 
 def ReturnInfoCard(pathImage):
-    typeimage = check_type_image(pathImage) 
-    if(typeimage!='png' and typeimage!='jpeg' and typeimage!='jpg' and typeimage != 'bmp'):
+    typeimage = check_type_image(pathImage)
+    if (typeimage != 'png' and typeimage != 'jpeg' and typeimage != 'jpg' and typeimage != 'bmp'):
         obj = MessageInfo(None, 1, 'Invalid image file! Please try again.')
         return obj
     else:
         crop = ReturnCrop(pathImage)
         # Trich xuat thong tin tu imageCrop
         if (crop is not None):
-            indices, boxes, classes, class_ids, image, confidences = getIndices(crop, net_rec, classes_rec )
+            indices, boxes, classes, class_ids, image, confidences = getIndices(
+                crop, net_rec, classes_rec)
             dict_home, dict_address, dict_features = {}, {}, {}
             home_text, address_text, features_text = [], [], []
             label_boxes = []
+            imgFace = None
             for i in indices:
                 i = i[0]
                 box = boxes[i]
@@ -192,7 +199,8 @@ def ReturnInfoCard(pathImage):
                 h = box[3]
                 label_boxes.append(str(classes[class_ids[i]]))
                 # draw_prediction(crop, classes[class_ids[i]], confidences[i], round(x), round(y), round(x + w), round(y + h))
-                imageCrop = image[round(y): round(y + h), round(x):round(x + w)]
+                imageCrop = image[round(y): round(
+                    y + h), round(x):round(x + w)]
                 img = Image.fromarray(imageCrop)
                 s = detector.predict(img)
                 if (class_ids[i] == 0):
@@ -215,6 +223,8 @@ def ReturnInfoCard(pathImage):
                     dict_features.update({s: y})
                 if (class_ids[i] == 9):
                     issue_date_card = s
+                if(class_ids[i]== 10):
+                    imgFace = imageCrop
             classesFront = ['id', 'name', 'dob', 'sex',
                             'nationality', 'home', 'address', 'doe', 'image']
             classesBack = ['features', 'issue_date']
@@ -225,12 +235,20 @@ def ReturnInfoCard(pathImage):
                 for i in sorted(dict_features.items(),
                                 key=lambda item: item[1]): features_text.append(i[0])
                 features_text = " ".join(features_text)
-                obj = ExtractCardBack(features_text, issue_date_card, type, errorCode, errorMessage)
+                obj = ExtractCardBack(
+                    features_text, issue_date_card, type, errorCode, errorMessage)
                 return obj
             if (check_enough_labels(label_boxes, classesFront)):
                 type = "cccd_front"
                 errorCode = 0
                 errorMessage = ""
+                pathSave = os.getcwd() + '\\citizens\\'
+                stringImage = "citizens" + '_' + str(time.time()) + ".jpg"
+                if (os.path.exists(pathSave)):
+                    cv2.imwrite(pathSave + stringImage, imgFace)
+                else:
+                    os.mkdir(pathSave)
+                    cv2.imwrite(pathSave + stringImage, imgFace)
                 for i in sorted(dict_home.items(),
                                 key=lambda item: item[1]): home_text.append(i[0])
                 for i in sorted(dict_address.items(),
@@ -238,20 +256,28 @@ def ReturnInfoCard(pathImage):
                 home_text = " ".join(home_text)
                 address_text = " ".join(address_text)
                 obj = ExtractCardFront(id_card, name_card, dob_card, sex_card, nationality_card, home_text,
-                                    address_text, doe_card, type, errorCode, errorMessage)
+                                       address_text, doe_card, stringImage, type, errorCode, errorMessage)
                 return obj
             else:
-                obj = MessageInfo(None, 3, "The photo quality is low. Please try the image again !")
+                obj = MessageInfo(
+                    None, 3, "The photo quality is low. Please try the image again !")
                 return obj
         else:
-            obj = MessageInfo(None, 4, "Error! Citizen identification not found !")
+            obj = MessageInfo(
+                None, 4, "Error! Unable to find ID card in the image !")
             return obj
+
+
 detector = vietocr_load()
-net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights', './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
-net_rec, classes_rec= load_model('./model/rec/yolov4-custom_rec.weights', './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
+net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights',
+                                  './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
+net_rec, classes_rec = load_model('./model/rec/yolov4-custom_rec.weights',
+                                  './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
 # Class object
+
+
 class ExtractCardFront:
-    def __init__(self, id, name, dob, sex, nationality, home, address, doe, type, errorCode, errorMessage):
+    def __init__(self, id, name, dob, sex, nationality, home, address, doe,imageFace, type, errorCode, errorMessage):
         self.id = id
         self.name = name
         self.dob = dob
@@ -260,6 +286,7 @@ class ExtractCardFront:
         self.home = home
         self.address = address
         self.doe = doe
+        self.imageFace = imageFace
         self.type = type
         self.errorCode = errorCode
         self.errorMessage = errorMessage
