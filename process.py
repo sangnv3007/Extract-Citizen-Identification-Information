@@ -4,11 +4,12 @@ from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 import os
-import re
 import base64
-import json
 import time
+
 # Funtions
+
+
 # Ham decode, endecode
 
 
@@ -39,7 +40,7 @@ def check_type_image(path):
 
 def get_output_layers(net):
     layer_names = net.getLayerNames()
-    output_layers = [layer_names[i[0] - 1]
+    output_layers = [layer_names[i - 1]
                      for i in net.getUnconnectedOutLayers()]
     return output_layers
 
@@ -156,7 +157,7 @@ def ReturnCrop(pathImage):
     list_boxes = []
     label = []
     for i in indices:
-        i = i[0]
+        #i = i[0]
         box = boxes[i]
         # print(box,str(classes[class_ids[i]]))
         x = box[0]
@@ -191,7 +192,7 @@ def ReturnInfoCard(pathImage):
             label_boxes = []
             imgFace = None
             for i in indices:
-                i = i[0]
+                #i = i[0]
                 box = boxes[i]
                 x = box[0]
                 y = box[1]
@@ -266,16 +267,12 @@ def ReturnInfoCard(pathImage):
             obj = MessageInfo(
                 None, 4, "Error! Unable to find ID card in the image !")
             return obj
-
-
 detector = vietocr_load()
 net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights',
                                   './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
 net_rec, classes_rec = load_model('./model/rec/yolov4-custom_rec.weights',
                                   './model/rec/yolov4-custom_rec.cfg', './model/rec/obj_rec.names')
 # Class object
-
-
 class ExtractCardFront:
     def __init__(self, id, name, dob, sex, nationality, home, address, doe,imageFace, type, errorCode, errorMessage):
         self.id = id
@@ -307,7 +304,7 @@ class MessageInfo:
         self.errorCode = errorCode
         self.errorMessage = errorMessage
 #obj = ReturnInfoCard("cmt.be3f6567.png")
-# print(obj.name)
+#print(obj.name)
 # if (obj.type == "cccd_front"):
 #     print(json.dumps({"errorCode": obj.errorCode, "errorMessage": obj.errorMessage,
 #     "data":[{"id": obj.id, "name": obj.name, "dob": obj.dob,"sex": obj.sex,

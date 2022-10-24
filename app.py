@@ -1,4 +1,3 @@
-import cv2
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import showinfo
@@ -6,8 +5,6 @@ from PIL import Image, ImageTk
 from tkinter import filedialog as fd
 from process import ReturnInfoCard
 import json
-import time
-import sys
 
 def uploadF():
     global pathFront
@@ -20,25 +17,13 @@ def uploadF():
         initialdir='/',
         filetypes=filetypes)
     imgFront = ImageTk.PhotoImage(Image.open(filenameF).resize((400, 270)))
-    label_photo.configure(image=imgFront)
-    label_photo.image = imgFront
+    lb_photo_page1.configure(image=imgFront)
+    lb_photo_page1.image = imgFront
     bt_uploadF.configure(text="Chụp/ Tải lại",  bg="white", fg='black')
     bt_uploadF.place(relx=0.3, width=250, anchor=CENTER)
     bt_continueF.place(relx=0.7, rely=0.7, anchor=CENTER, width=250)
     pathFront = filenameF
 
-
-def changeForm():
-    lb_title.configure(text="Chụp lại ảnh CMND/Thẻ căn cước mặt sau của bạn")
-    imgBack = ImageTk.PhotoImage(Image.open('cmt_back.29611820.png'))
-    label_photo.configure(image=imgBack)
-    label_photo.image = imgBack
-    bt_uploadF.destroy()
-    bt_continueF.destroy()
-    bt_uploadB.place(relx=0.5, rely=0.7, anchor=CENTER, width=600)
-
-def gobackFormF():
-    print()
 def uploadB():
     global pathBack
     filetypes = (
@@ -50,15 +35,16 @@ def uploadB():
         initialdir='/',
         filetypes=filetypes)
     imgBack = ImageTk.PhotoImage(Image.open(filenameB).resize((400, 270)))
-    label_photo.configure(image=imgBack)
-    label_photo.image = imgBack
+    lb_photo_page2.configure(image=imgBack)
+    lb_photo_page2.image = imgBack
     bt_uploadB.configure(text="Chụp/ Tải lại",  bg="white", fg='black')
     bt_uploadB.place(relx=0.3, width=250, anchor=CENTER)
     bt_continueB.place(relx=0.7, rely=0.7, anchor=CENTER, width=250)
-    label_return.place(relx=0.5, rely=0.8, anchor=CENTER)
+    label_return_page1.place(relx=0.5, rely=0.8, anchor=CENTER)
     pathBack = filenameB
+
 def process():
-    process_bar.place(relx=0.5, rely=0.9, anchor=CENTER)
+    process_bar.place(relx=0.5, rely=0.95, anchor=CENTER)
     process_bar['value'] = 0
     process_bar['value'] = 20
     formF.update_idletasks()
@@ -78,15 +64,7 @@ def process():
                                 "type": obj2.type}]}, ensure_ascii= False).encode('utf8')
     print(json_string_B.decode())
     process_bar['value'] = 100
-    bt_continueB.destroy()
-    bt_uploadB.destroy()
-    process_bar.destroy()
-    lb_title.configure(text="Chụp lại ảnh khuôn mặt của bạn")
-    lb_notice.configure(text="")
-    imgFace = ImageTk.PhotoImage(Image.open('face.c8f1db03.png'))
-    label_photo.configure(image=imgFace)
-    label_photo.image = imgFace
-    bt_uploadFace.place(relx=0.5, rely=0.8, anchor=CENTER, width=500)
+    show_frame(page3)
 
 def uploadFace():
     global pathFace
@@ -99,49 +77,78 @@ def uploadFace():
         initialdir='/',
         filetypes=filetypes)
     imgFace = ImageTk.PhotoImage(Image.open(filenameFace).resize((200, 350)))
-    label_photo.configure(image=imgFace)
-    label_photo.image = imgFace
+    label_photo_page3.configure(image=imgFace)
+    label_photo_page3.image = imgFace
     bt_uploadFace.configure(text="Chụp/ Tải lại",  bg="white", fg='black')
     bt_uploadFace.place(relx=0.3, width=250, anchor=CENTER)
     bt_continueFace.place(relx=0.7, rely=0.8, anchor=CENTER, width=250)
+    label_return_page2.place(relx=0.5, rely=0.9, anchor=CENTER)
     pathFace = filenameFace
-    
+
 def res():
     print("Ket qua xac minh")
     print(pathFront)
     print(pathBack)
     print(pathFace)
-# Create formF
+def show_frame(frame):
+    frame.tkraise()
+# Create formFp
 formF = Tk()
 formF.title("Chương trình demo eKYC")
 formF.geometry("800x600")
-#
-lb_title = Label(formF, text="Chụp lại ảnh CMND/Thẻ căn cước mặt trước của bạn", font='Arial 16 bold')
-lb_title.pack(side="top")
-#
-lb_notice = Label(
-    formF, text="* Vui lòng sử dụng giấy tờ thật. Hãy đảm bảo ảnh chụp không bị mờ hoặc bóng, thông tin hiển thị rõ ràng, dễ đọc.",
+formF.rowconfigure(0, weight=1)
+formF.columnconfigure(0, weight=1)
+#formF.state('zoomed')
+#setup page app
+page1 = Frame(formF)
+page2 = Frame(formF)
+page3 = Frame(formF)
+for frame in (page1, page2, page3):
+    frame.grid(row=0, column=0, sticky='nsew') 
+show_frame(page1)
+# ======== Page 1(Upload front photo) ========
+lb_title_page1 = Label(page1, text="Chụp lại ảnh Thẻ căn cước mặt trước của bạn", font='Arial 16 bold')
+lb_title_page1.pack(side="top")
+lb_notice_page1 = Label(
+    page1, text="* Vui lòng sử dụng giấy tờ thật. Hãy đảm bảo ảnh chụp không bị mờ hoặc bóng, thông tin hiển thị rõ ràng, dễ đọc.",
     font='Arial 8', fg='red')
-lb_notice.place(relx=0.5, rely=0.1, anchor=CENTER)
-#
+lb_notice_page1.place(relx=0.5, rely=0.1, anchor=CENTER)
 photoF = PhotoImage(file="cmt.be3f6567.png")
-label_photo = Label(image=photoF)
-label_photo.place(relx=0.5, rely=0.4, anchor=CENTER)
-#
-bt_uploadF = Button(formF, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadF)
+lb_photo_page1 = Label(page1, image=photoF)
+lb_photo_page1.place(relx=0.5, rely=0.4, anchor=CENTER)
+bt_uploadF = Button(page1, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadF)
 bt_uploadF.place(relx=0.5, rely=0.7, anchor=CENTER, width=600)
-bt_continueF = Button(formF, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=changeForm)
+bt_continueF = Button(page1, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=lambda: show_frame(page2))
 bt_continueF.place(width=0)
-#
-label_return = Button(formF, text="Quay lại", font=("Arial 16 bold"), bg="white", fg='red', command=gobackFormF)
-bt_uploadB = Button(formF, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadB)
-bt_uploadB.place(width=0)
-process_bar = ttk.Progressbar(formF, orient = HORIZONTAL, length = 400, mode = 'determinate')
-bt_continueB = Button(formF, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=process)
+# ======== Page 2(Upload back photo) ========
+lb_title_page2 = Label(page2, text="Chụp lại ảnh Thẻ căn cước mặt sau của bạn", font='Arial 16 bold')
+lb_title_page2.pack(side="top")
+lb_notice_page2 = Label(
+    page2, text="* Vui lòng sử dụng giấy tờ thật. Hãy đảm bảo ảnh chụp không bị mờ hoặc bóng, thông tin hiển thị rõ ràng, dễ đọc.",
+    font='Arial 8', fg='red')
+lb_notice_page2.place(relx=0.5, rely=0.1, anchor=CENTER)
+photoB = PhotoImage( file="cmt_back.29611820.png")
+lb_photo_page2 = Label(page2, image=photoB)
+lb_photo_page2.place(relx=0.5, rely=0.4, anchor=CENTER)
+bt_uploadB = Button(page2, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadB)
+bt_uploadB.place(relx=0.5, rely=0.7, anchor=CENTER, width=600)
+bt_continueB = Button(page2, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command= process)
 bt_continueB.place(width=0)
-#
-bt_uploadFace = Button(formF, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadFace)
-bt_uploadFace.place(width=0)
-bt_continueFace = Button(formF, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=res)
+label_return_page1 = Button(page2, text="Quay lại", font=("Arial 16 bold"), bg="white", fg='red', command=lambda: show_frame(page1))
+process_bar = ttk.Progressbar(page2, orient = HORIZONTAL, length = 400, mode = 'determinate')
+# ======== Page 3(3pload Face photo) ========
+lb_title_page3 = Label(page3, text="Chụp lại ảnh khuôn mặt của bạn", font='Arial 16 bold')
+lb_title_page3.pack(side="top")
+lb_notice_page3 = Label(
+    page3, text="* Vui lòng sử dụng ảnh khuôn mặt thật của bạn. Hãy đảm bảo ảnh chụp không bị mờ hoặc bóng, có thể nhìn rõ khuôn mặt.",
+    font='Arial 8', fg='red')
+lb_notice_page2.place(relx=0.5, rely=0.1, anchor=CENTER)
+imgFace = PhotoImage(file="face.c8f1db03.png")
+label_photo_page3= Label(page3,image=imgFace)
+label_photo_page3.place(relx=0.5, rely=0.4, anchor=CENTER)
+bt_uploadFace = Button(page3, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadFace)
+bt_uploadFace.place(relx=0.5, rely=0.8, anchor=CENTER, width=600)
+bt_continueFace = Button(page3, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=res)
 bt_continueFace.place(width=0)
+label_return_page2 = Button(page3, text="Quay lại", font=("Arial 16 bold"), bg="white", fg='red', command=lambda: show_frame(page2))
 formF.mainloop()
