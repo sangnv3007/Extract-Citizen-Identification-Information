@@ -64,6 +64,7 @@ def process():
                                 "type": obj2.type}]}, ensure_ascii= False).encode('utf8')
     print(json_string_B.decode())
     process_bar['value'] = 100
+    process_bar.destroy()
     show_frame(page3)
 
 def uploadFace():
@@ -85,17 +86,12 @@ def uploadFace():
     label_return_page2.place(relx=0.5, rely=0.9, anchor=CENTER)
     pathFace = filenameFace
 
-def res():
-    print("Ket qua xac minh")
-    print(pathFront)
-    print(pathBack)
-    print(pathFace)
 def show_frame(frame):
     frame.tkraise()
 # Create formFp
 formF = Tk()
 formF.title("Chương trình demo eKYC")
-formF.geometry("800x600")
+formF.geometry("900x700")
 formF.rowconfigure(0, weight=1)
 formF.columnconfigure(0, weight=1)
 #formF.state('zoomed')
@@ -103,9 +99,10 @@ formF.columnconfigure(0, weight=1)
 page1 = Frame(formF)
 page2 = Frame(formF)
 page3 = Frame(formF)
-for frame in (page1, page2, page3):
+page4 = Frame(formF)
+for frame in (page1, page2, page3, page4):
     frame.grid(row=0, column=0, sticky='nsew') 
-show_frame(page1)
+show_frame(page4)
 # ======== Page 1(Upload front photo) ========
 lb_title_page1 = Label(page1, text="Chụp lại ảnh Thẻ căn cước mặt trước của bạn", font='Arial 16 bold')
 lb_title_page1.pack(side="top")
@@ -136,7 +133,7 @@ bt_continueB = Button(page2, text="Tiếp theo", font=("Arial 16 bold"), bg="blu
 bt_continueB.place(width=0)
 label_return_page1 = Button(page2, text="Quay lại", font=("Arial 16 bold"), bg="white", fg='red', command=lambda: show_frame(page1))
 process_bar = ttk.Progressbar(page2, orient = HORIZONTAL, length = 400, mode = 'determinate')
-# ======== Page 3(3pload Face photo) ========
+# ======== Page 3(Upload Face photo) ========
 lb_title_page3 = Label(page3, text="Chụp lại ảnh khuôn mặt của bạn", font='Arial 16 bold')
 lb_title_page3.pack(side="top")
 lb_notice_page3 = Label(
@@ -148,7 +145,15 @@ label_photo_page3= Label(page3,image=imgFace)
 label_photo_page3.place(relx=0.5, rely=0.4, anchor=CENTER)
 bt_uploadFace = Button(page3, text="Tải ảnh/ Chụp ảnh", font=("Arial 16 bold"), bg="blue", fg='white', command=uploadFace)
 bt_uploadFace.place(relx=0.5, rely=0.8, anchor=CENTER, width=600)
-bt_continueFace = Button(page3, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=res)
+bt_continueFace = Button(page3, text="Tiếp theo", font=("Arial 16 bold"), bg="blue", fg='white', command=lambda: show_frame(page4))
 bt_continueFace.place(width=0)
 label_return_page2 = Button(page3, text="Quay lại", font=("Arial 16 bold"), bg="white", fg='red', command=lambda: show_frame(page2))
+
+# ======== Page 4(Return result) ========
+lb_title_page4 = Label(page4, text="Kết quả xác minh", font='Arial 16 bold')
+lb_title_page4.pack(side="top")
+#res_photo_front = PhotoImage(Image.open("CMND (480).jpeg").resize((250, 200)))
+res_photo_front = ImageTk.PhotoImage(Image.open("CMND (480).jpeg").resize((200, 250)))
+lb_res_front= Label(page4,image=res_photo_front)
+lb_res_front.place(relx=0.2, rely=0.4, anchor=LEFT)
 formF.mainloop()
