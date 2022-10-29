@@ -6,7 +6,7 @@ from vietocr.tool.config import Cfg
 import os
 import base64
 import time
-
+import face_recognition
 # Funtions
 
 
@@ -267,6 +267,13 @@ def ReturnInfoCard(pathImage):
             obj = MessageInfo(
                 None, 4, "Error! Unable to find ID card in the image !")
             return obj
+def compare(pathInput, pathSelfie):
+    input_image = face_recognition.load_image_file(pathInput)
+    selfie_image = face_recognition.load_image_file(pathSelfie)
+    input_encoding = face_recognition.face_encodings(input_image)[0]
+    selfie_encoding = face_recognition.face_encodings(selfie_image)[0]
+    face_distance = face_recognition.face_distance([input_encoding],selfie_encoding)
+    return face_distance[0]
 detector = vietocr_load()
 net_det, classes_det = load_model('./model/det/yolov4-tiny-custom_det.weights',
                                   './model/det/yolov4-tiny-custom_det.cfg', './model/det/obj_det.names')
