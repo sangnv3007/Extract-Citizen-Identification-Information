@@ -87,7 +87,7 @@ Now go to <a href="http://127.0.0.1:8000/docs" class="external-link" target="_bl
 
 Image example
 
-![CCCD Test](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/CMND%20(480).jpeg)
+![CCCD Test](https://github.com/sangnv3007/Extract-Citizen-Identification-Information/blob/main/CCCD%20(480).jpeg)
 
 Return results
 
